@@ -39,6 +39,7 @@ export default function HomePage(props)
     const [isSetting, setIsSetting] = useState(false)
     const [slippage, setSlippage] = useState(2)
     const [searchBarValue, setSearchBarValue] = useState(<div></div>)
+    const [searchBarValue2, setSearchBarValue2] = useState(<div></div>)
     // Refresh btn
     const [isRotating, setIsRotating] = useState(false);
     const handleRefreshClick = () => {
@@ -154,10 +155,9 @@ export default function HomePage(props)
         if(window.ethereum)
           fn();
       }, []);
-      
+      const _provider = new ethers.providers.JsonRpcProvider(value.rpcUrl)
       useEffect(()=>{
-        async function searchBar(){
-            const _provider = new ethers.providers.JsonRpcProvider(value.rpcUrl)
+        async function searchBar1(){
             if(searchValue1.startsWith("0x") || searchValue1.startsWith("0X")){
                 if(searchValue1.length === tokenMap[0][0].length){
                     const tokenRouter = tokenContract(_provider, searchValue1)
@@ -184,7 +184,7 @@ export default function HomePage(props)
                     const searchTerm = searchValue1.toUpperCase();
                     return item[1].includes(searchTerm)
                 }).map((element) => {
-                    return (<div className="fav-token cursor-pointer" key={element[0] + element[1]} onClick={() => onClickToken(element, 1)}>
+                    return (<div className="fav-token cursor-pointer" key={element[0] + element[1] + "1"} onClick={() => onClickToken(element, 1)}>
                     {element[2] !== "" ? <img src={require(`../assests/images/webP/${element[2]}`)} alt ="eth-icon" />: <img src={ethIcon} alt ="eth-icon" />}
                     <div>{element[1]}</div>
                 </div>)
@@ -192,47 +192,47 @@ export default function HomePage(props)
                 setSearchBarValue(temp)
             }
         }
-        searchBar();
+        searchBar1();
       }, [searchValue1])
-      const _provider = new ethers.providers.JsonRpcProvider(value.rpcUrl)
+      
       useEffect(()=>{
-        async function searchBar(){
-            if(searchValue1.startsWith("0x") || searchValue1.startsWith("0X")){
-                if(searchValue1.length === tokenMap[0][1].length){
-                    const tokenRouter = tokenContract(_provider, searchValue1)
+        async function searchBar2(){
+            if(searchValue2.startsWith("0x") || searchValue2.startsWith("0X")){
+                if(searchValue2.length === tokenMap[0][1].length){
+                    const tokenRouter = tokenContract(_provider, searchValue2)
                     try{
                         const name = await tokenRouter.symbol();
-                        setToken2(searchValue1)
+                        setToken2(searchValue2)
                         setSelectedToken2(name)
                         setSelectToken1(false)
                         setSelectToken2(false)
                         setUserInput(0)
                     }
                     catch(e){
-                        setSearchBarValue(selectToken2 && <div>Address Not found</div>)
+                        setSearchBarValue2(selectToken2 && <div>Address Not found</div>)
                     }
                 }
                 else{
                     console.log("NOOOOOOOOO sarrrrrrrrrrrr")
-                    setSearchBarValue(selectToken2 && <div>Address Not found</div>)
+                    setSearchBarValue2(selectToken2 && <div>Address Not found</div>)
                     
                 }
             }
             else{
                 let temp = tokenMap.filter((item) =>{
-                    const searchTerm = searchValue1.toUpperCase();
+                    const searchTerm = searchValue2.toUpperCase();
                     return item[1].includes(searchTerm)
                 }).map((element) => {
-                    return (<div className="fav-token cursor-pointer" key={element[0] + element[1]} onClick={() => onClickToken(element, 2)}>
+                    return (<div className="fav-token cursor-pointer" key={element[0] + element[1] + "2"} onClick={() => onClickToken(element, 2)}>
                     {element[2] !== "" ? <img src={require(`../assests/images/webP/${element[2]}`)} alt ="eth-icon" />: <img src={ethIcon} alt ="eth-icon" />}
                     <div>{element[1]}</div>
                 </div>)
                 })
-                setSearchBarValue(temp)
+                setSearchBarValue2(temp)
             }
         }
-        searchBar();
-      }, [searchValue1])
+        searchBar2();
+      }, [searchValue2])
     
     return (
         <>
@@ -287,7 +287,7 @@ export default function HomePage(props)
                         </div>
                         <div className='token-input-row'>
                             <div onClick={()=>{
-                                setSearchValue1('')
+                                setSearchValue2('')
                                 setSelectToken2(true)}} className='select-coin cursor-pointer'>
                                 <div className='coin-desc'>
                                     <img src={ethIcon} alt ="dai-icon" />
@@ -410,29 +410,46 @@ export default function HomePage(props)
                         </div>
                         <div className="headingtxt">Select a token</div>
                     </div>
-                    <div className="searchBar">
+                    {/* <div className="searchBar">
                         <img src={searchIcon} className="searchIcon" alt="search-icon"/>
                         <input className="search-input" type="text" placeholder="Search by name or paste address" value={searchValue1} onChange=
                         {(event)=>{
                             setSearchValue1(event.target.value)
                         }}/>
                     </div>
-                    <div className="token-grid">
+                    <div className="token-grid"> */}
                         {/* {selectToken1 && tokenMap.map(element => {
                             return (<div className="fav-token cursor-pointer" key={element[0] + element[1]} onClick={() => onClickToken(element, 1)}>
                                 {element[2] !== "" ? <img src={require(`../assests/images/webP/${element[2]}`)} alt ="eth-icon" />: <img src={ethIcon} alt ="eth-icon" />}
                                 <div>{element[1]}</div>
                             </div>)
                         })} */}
-                        {selectToken1 && searchBarValue}
-                        {selectToken2 && searchBarValue}
+                        {selectToken1 && <div className="searchBar">
+                        <img src={searchIcon} className="searchIcon" alt="search-icon"/>
+                        <input className="search-input" type="text" placeholder="Search by name or paste address" value={searchValue1} onChange=
+                        {(event)=>{
+                            setSearchValue1(event.target.value)
+                        }}/>
+                    </div>}
+                    {selectToken1 && <div className="token-grid">
+                        {searchBarValue}
+                    </div>}
+                    {selectToken2 && <div className="searchBar">
+                        <img src={searchIcon} className="searchIcon" alt="search-icon"/>
+                        <input className="search-input" type="text" placeholder="Search by name or paste address" value={searchValue2} onChange=
+                        {(event)=>{
+                            setSearchValue2(event.target.value)
+                        }}/>
+                    </div>}
+                    {selectToken2 && <div className="token-grid">
+                        {searchBarValue2}
+                    </div>}
                         {/* {selectToken2 && tokenMap.map(element => {
                             return (<div className="fav-token cursor-pointer" key={element[0] + element[1]} onClick={() => onClickToken(element, 2)}>
                                 {element[2] !== "" ? <img src={require(`../assests/images/webP/${element[2]}`)} alt ="eth-icon" />: <img src={ethIcon} alt ="eth-icon" />}
                                 <div>{element[1]}</div>
                             </div>)
                         })} */}
-                    </div>
                     {/* <div className="separator"></div>
                     <div className="select-accordion">
                         <div className="token-choice">
