@@ -194,7 +194,7 @@ export default function HomePage(props)
         }
         searchBar();
       }, [searchValue1])
-    
+      const _provider = new ethers.providers.JsonRpcProvider(value.rpcUrl)
       useEffect(()=>{
         async function searchBar(){
             if(searchValue1.startsWith("0x") || searchValue1.startsWith("0X")){
