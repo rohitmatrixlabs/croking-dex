@@ -1,5 +1,7 @@
 import React from 'react'
 import Logo from '../assests/images/logo.svg';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import "./style.css";
 
 export default function Navbar(props) {
@@ -12,7 +14,7 @@ export default function Navbar(props) {
               <img src={Logo} alt =""/>
               <p>CroKing</p>
             </div>
-            <button  className="button display-sm-hidden display-md-inline-flex">Connect Wallet</button>
+            <ConnectButton sx={{color: '#020202'}}/>
           </div>
         </div>
       </header>

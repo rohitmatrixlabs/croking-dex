@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 input:focus,
 select:focus,
 textarea:focus,
@@ -124,13 +125,12 @@ button:focus {
     gap: 15px;
     background: linear-gradient(90deg, #E3A400 0%, #DFBB00 100%);
     border-radius: 15px;
-    padding: 0.5em 1em;
+    padding: 0.5em 3em;
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 700;
     font-size: 20px;
     cursor: pointer;
-    width: 100%;
     border: none;
 }
 
@@ -200,6 +200,9 @@ button:focus {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+.cursor-pointer{
+    cursor: pointer;
 }
 
 .coin-desc img{
@@ -317,7 +320,9 @@ button:focus {
 .btn-wrapper{
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 0 1em;
+    gap: 2rem;
 }
 
 .select-token-header{
@@ -361,20 +366,23 @@ button:focus {
     grid-gap: 10px;
 }
 
-.fav-tokens{
+.fav-token{
     border: 1px solid #DFBB00;
     border-radius: 10px;
     display: flex;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
+    overflow: hidden;
     align-items: center;
     gap: 10px;
     padding: 5px;
 }
-
-.fav-tokens img{
-    height: 30px;
-    width: 30px;
+.fav-token:hover, .fav-token:focus{
+    background-color: rgb(2, 2, 2);
+}
+.fav-token img{
+    height: 20px;
+    width: 20px;
 }
 
 .separator{
@@ -404,7 +412,7 @@ button:focus {
     align-self: center;
     display: flex;
     width: 100%;
-    justify-content: end;
+    justify-content: flex-end;
 }
 
 .pin-align{
@@ -450,7 +458,10 @@ button:focus {
         transform: rotate(360deg);
     }
 }
-
+.swap-icons{
+    display: flex;
+    gap: 1rem;
+}
 .backIcon-div{
     width: 40px;
     height: 40px;
@@ -479,6 +490,8 @@ button:focus {
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: repeat(2, auto);
         grid-gap: 10px;
+        max-height: 280px;
+        overflow-y: auto;
     }
 }
 
@@ -488,5 +501,88 @@ button:focus {
     }
     .content-wrapper{
         align-items: center;
+    }
+}
+
+.no-style{
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
+.setting-component{
+    
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.setting-wrapper{
+    position: relative;
+    background-color: rgba(23, 24, 29, 1);
+    padding: 3rem 4rem;
+    border-radius: 25px;
+    min-width: 50%;
+}
+.back-button{
+    position: absolute;
+    top: 25px;
+    left: 25px
+}
+.setting-container h1{
+    text-align: left;
+    font-family: "Poppins";
+    font-size: 20px;
+    
+}
+.slippage{
+    display: flex;
+    justify-content: space-around;
+}
+.slippage-item{
+    font-family: "Poppins";
+    font-size: 20px;
+    color: rgba(153, 153, 153, 1);
+    background-color: rgba(37, 37, 45, 1);
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    margin-top: 2rem;
+}
+
+.tx-deadline{
+    display: flex;
+    margin-top: 4rem;
+}
+
+.setting-component input{
+    all: unset;
+    max-width: 50px;
+    margin-left: auto;
+    text-align: center;
+    font-size: 20px;
+    color: rgba(153, 153, 153, 1);
+    background-color: rgba(37, 37, 45, 1);
+    padding: 0.5rem 0.5rem;
+    border-radius: 20px;
+}
+
+@media (max-width: 800px) {
+    .slippage{
+        gap: 1rem;
+    }
+    .slippage-item{
+        font-size: 16px;
+    }
+    .setting-wrapper{
+        margin: 0 20px;
+    }
+    .setting-wrapper h1{
+        font-size: 16px;
     }
 }
