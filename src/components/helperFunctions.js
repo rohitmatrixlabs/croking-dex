@@ -1,5 +1,6 @@
 import { BigNumber } from "ethers";
-
+import { tokenContract } from "./helperConstants";
+import value from '../value.json'
 export function findSubsets(subset, nums, output, index)
 {
     if (index === nums.length) {
@@ -74,4 +75,15 @@ export function allSubsets(nums) {
     }
     
     return [val, row, col];
+  }
+
+  export async function checkAllowance(token, userAddress, signer, userInput){
+    const tokenRouter = tokenContract(signer, token);
+    const allowance = await tokenRouter.allowance(userAddress, value.aggregatorAddress)
+    if(BigNumber.from(allowance._hex).lt(userInput)){
+        const tx = await tokenRouter.approve(value.aggregatorAddress, BigNumber.from(10).pow(30))
+        console.log("Transaction waiting")
+        await tx.wait()
+        console.log("Transaction Confirmed")
+    }
   }

@@ -24,7 +24,7 @@ export default function SwapPrice(props) {
     const [finalPath, setFinalPath] = useState([token1, token2])
     const [pairs, setPairs] = useState()
     const [balance, setBalance] = useState(0)
-    const [routerFinalPath, setRouterFinalPath] = useState()
+    const [routerFinalPath, setRouterFinalPath] = useState([])
     useEffect(()=>{
         setOutPutTokens(userInput*finalAmount)
     }, [userInput, token1, token2])
@@ -97,9 +97,9 @@ export default function SwapPrice(props) {
             }
             
         }
-        if(routerFinalPath[0] !== null && routerFinalPath[0] !== undefined)
-            console.log("pairs kyu nhi horha bro", routerFinalPath[0], routerFinalPath[1])
-            findPairs();
+        if(routerFinalPath !== null && routerFinalPath !== undefined && routerFinalPath[0] !== null && routerFinalPath[0] !== undefined && routerFinalPath[1] !== null && routerFinalPath[1] !== undefined)
+          {  console.log("pairs kyu nhi horha bro", routerFinalPath[0], routerFinalPath[1])
+            findPairs();}
     }, [routerFinalPath])
     async function getBalance(){
         try{const provider = new ethers.providers.Web3Provider(window.ethereum);

@@ -17,11 +17,12 @@ import searchIcon from "../assests/images/searchIcon.svg"
 import pin from "../assests/images/pin.svg"
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { tokenMap, tokenContract, aggregatorContract } from "../helperConstants";
+import { checkAllowance } from '../helperFunctions'
 import highlightedpin from "../assests/images/highlightedPin.svg"
 import "./style.css";
 import { Lottie1, Lottie1Dark } from '../Lottie';
 import { useSigner } from "wagmi";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { Notyf } from "notyf";
 import 'notyf/notyf.min.css';
 export default function HomePage(props)
@@ -92,10 +93,16 @@ export default function HomePage(props)
             const outPutTokenRouter = tokenContract(provider, token2)
             const decimals = await tokenRouter.decimals()
             const bigUserInput = ethers.utils.parseUnits(userInput.toString(), decimals);
+            if(!isCro){
+                await checkAllowance(token1, address, signer, bigUserInput)
+            }
             if(ethers.BigNumber.from(bigUserInput).lt(balance)){
                 const outDecimals = await outPutTokenRouter.decimals()
                 const bigOut = ethers.utils.parseUnits(outPutTokens.toFixed(outDecimals).toString(), outDecimals)
-                const amountOutmin = ethers.BigNumber.from(bigOut).mul((100-slippage1.toFixed(1))*10).div(1000)    
+                const temp = parseInt((100 - parseFloat(parseFloat(slippage1).toFixed(1))) * 10)
+                console.log(temp)
+                const amountOutmin = ethers.BigNumber.from(bigOut).mul(temp).div(1000)
+                // console.log(ethers.utils.parseUnits(amountOutmin, outDecimals)) 
                 const aggregatorRouter = aggregatorContract(signer);
                 const deadLineFromNow = Math.floor(Date.now() / 1000) + deadline * 60;
                 if(isCro && isOutputCro) {
@@ -103,7 +110,7 @@ export default function HomePage(props)
                     return 
                 } 
                 if(isCro){
-                    console.log(finalPath, pairs, address)
+                    console.log(finalPath, pairs, address, "iscro")
             try
         {const response = await aggregatorRouter.swapExactETHForTokensSupportingFeeOnTransferTokens(
                 2, finalPath, pairs, address, 9999999999999
@@ -115,10 +122,11 @@ export default function HomePage(props)
             }
                 }
                 else if(isOutputCro){
+                    console.log(finalPath, pairs, address, "outPutCro")
                     try{
                         const response = await 
             aggregatorRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
-                bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
+                bigUserInput, 2, finalPath, pairs, address, 9999999999999
             , { gasPrice: finalGasPrice})
             notyf.success("Transaction Success")
         }
@@ -129,10 +137,11 @@ export default function HomePage(props)
             }
                 }
                 else{
+                    console.log(finalPath, pairs, address, "tokenTOtoken")
                     console.log(finalPath, pairs, address, isCro, isOutputCro)
-                    try
+                    try           
         {const response = await aggregatorRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-                bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
+                bigUserInput, 2, finalPath, pairs, address, 9999999999999
             , { gasPrice: finalGasPrice})
             notyf.success("Transaction Success")}
             catch(e){
@@ -145,6 +154,9 @@ export default function HomePage(props)
                 notyf.error("Transaction Failed")
                 return
             }
+        }
+        else{
+            notyf.error("Reload the page and try again")
         }
 
     }
