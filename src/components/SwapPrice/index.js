@@ -84,7 +84,6 @@ export default function SwapPrice(props) {
                     temp.push(pair)
                 }
                 setPairs(temp)
-                console.log(router)
             }
             catch(e){
                 console.log(e)
@@ -103,10 +102,10 @@ export default function SwapPrice(props) {
         if(isCro){
             balance1 = await provider.getBalance(address)
         }
-        else
-        {balance1 = await token1Contract.balanceOf(address)}
-        setBalance(balance1)
-        console.log("jdfsajf", balance1)}
+        else{
+            balance1 = await token1Contract.balanceOf(address)
+        }
+        setBalance(balance1)}
         catch(e){
             console.log(e, "Error in fetching Balance")
         }
@@ -119,7 +118,6 @@ export default function SwapPrice(props) {
     }, [token1, reload])
 
     useEffect(()=>{
-        console.log(balance)
         setParameters([balance, router, finalPath, pairs])
     }, [balance, router, finalPath, pairs, reload])
   return (

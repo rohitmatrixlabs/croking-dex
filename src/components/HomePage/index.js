@@ -110,17 +110,23 @@ export default function HomePage(props)
             try
         {const response = await aggregatorRouter.swapExactETHForTokensSupportingFeeOnTransferTokens(
                 amountOutmin, finalPath, pairs, address, 9999999999999
-            , { value: bigUserInput , gasPrice: finalGasPrice, gasLimit: 1000000})}
+            , { value: bigUserInput , gasPrice: finalGasPrice, gasLimit: 
+                1000000})
+            notyf.success("Transaction Success")}
             catch(e){
                 console.log("can't complete transaction", e)
                 notyf.error("Transaction Failed")
             }
                 }
                 else if(isOutputCro){
-                    try
-        {const response = await aggregatorRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
+                    try{
+                        const response = await 
+            aggregatorRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
                 bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
-            , { gasPrice: finalGasPrice, gasLimit: 1000000})}
+            , { gasPrice: finalGasPrice, gasLimit: 1000000})
+            notyf.success("Transaction Success")
+        }
+            
             catch(e){
                 console.log("can't complete transaction", e)
                 notyf.error("Transaction Failed")
@@ -130,7 +136,8 @@ export default function HomePage(props)
                     try
         {const response = await aggregatorRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
                 bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
-            , { gasPrice: finalGasPrice, gasLimit: 1000000})}
+            , { gasPrice: finalGasPrice, gasLimit: 1000000})
+            notyf.success("Transaction Success")}
             catch(e){
                 console.log("can't complete transaction", e)
                 notyf.error("Transaction Failed")
