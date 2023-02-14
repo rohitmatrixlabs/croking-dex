@@ -11,7 +11,7 @@ import swapIcon from "../assests/images/swapIcon.svg";
 import walletIcon from "../assests/images/walletIcon.svg"
 import daiIcon from "../assests/images/daiIcon.svg";
 import ethIcon from "../assests/images/ethIcon.svg";
-import legacyIcon from '../assests/images/legacyIcon.svg'
+import {ReactComponent as LegacyIcon} from '../assests/images/legacyIcon.svg'
 import walkingman from "../assests/images/walkingman.svg"
 import searchIcon from "../assests/images/searchIcon.svg"
 import pin from "../assests/images/pin.svg"
@@ -19,12 +19,19 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { tokenMap, tokenContract, aggregatorContract } from "../helperConstants";
 import highlightedpin from "../assests/images/highlightedPin.svg"
 import "./style.css";
-import { Lottie1 } from '../Lottie';
+import { Lottie1, Lottie1Dark } from '../Lottie';
 import { useSigner } from "wagmi";
 import { ethers } from "ethers";
+import { Notyf } from "notyf";
+import 'notyf/notyf.min.css';
 export default function HomePage(props)
 {
-    const {setToken1, setToken2, setUserInput, userInput, outPutTokens, convertToken, token1, token2, setIsCro, parameters, isCro} = props
+    const {setToken1, setToken2, setUserInput, userInput, outPutTokens, convertToken, token1, token2, setIsCro, parameters, isCro, setReload, reload} = props
+    const notyf = new Notyf({
+        duration: 3000,
+        position: { x: "right", y: "top" },
+        dismissible: true,
+      });
     const [slippage1, setSlippage1] = useState(0.5)
     const [deadline, setDeadline] = useState(20)
     const [expanded, setExpanded] = useState(false);
@@ -40,25 +47,42 @@ export default function HomePage(props)
     const [slippage, setSlippage] = useState(2)
     const [searchBarValue, setSearchBarValue] = useState(<div></div>)
     const [searchBarValue2, setSearchBarValue2] = useState(<div></div>)
+    const [selectedIcon1, setSelectedIcon1] = 
+    useState(<img src={require(`../assests/images/webP/usdt.webp`)}/>)
+    const [selectedIcon2, setSelectedIcon2] = 
+    useState(<img src={require(`../assests/images/webP/eth.webp`)}/>)
     // Refresh btn
     const [isRotating, setIsRotating] = useState(false);
+    const [refresh, setRefresh] = useState(false);
+    const [fastTxn, setFastTxn] = useState(false)
+    const [isOutputCro, setIsOutputCro] = useState(false)
     const handleRefreshClick = () => {
         setIsRotating(true);
+        setReload(!reload)
         setTimeout(() => setIsRotating(false), 500); // rotate for 5 milliseconds
       };
     
     async function onClickSwap(){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        if(userInput === 0){
-            alert("Add Number of tokens")
+        console.log(parseFloat(userInput), "biadshfeworigdksnfionsg")
+        if(parseFloat(userInput) === 0){
+            notyf.error("Add input Amount")
             return
+        }
+        const feeData = await provider.getFeeData()
+        let finalGasPrice = 0;
+        if(fastTxn){
+            finalGasPrice = feeData.maxPriorityFeePerGas
+        }
+        else{
+            finalGasPrice = feeData.lastBaseFeePerGas
         }
         if(parameters.length === 4){
             const temp = await getUserWallet();
             const address =  temp[0];
             const signer = temp[1];
             if(address === '' || signer === ''){
-                alert("Please Reconnect Your Wallet and Try Again")
+                notyf.error("Please Reconnect Your Wallet and Try Again")
                 return 
             }
             const balance = parameters[0]._hex;
@@ -73,23 +97,48 @@ export default function HomePage(props)
             if(ethers.BigNumber.from(bigUserInput).lt(balance)){
                 const outDecimals = await outPutTokenRouter.decimals()
                 const bigOut = ethers.utils.parseUnits(outPutTokens.toFixed(outDecimals).toString(), outDecimals)
-                const amountOutmin = ethers.BigNumber.from(bigOut).mul((100-slippage1)*10).div(1000)    
+                const amountOutmin = ethers.BigNumber.from(bigOut).mul((100-slippage1.toFixed(1))*10).div(1000)    
                 const aggregatorRouter = aggregatorContract(signer);
                 console.log(amountOutmin, address)
                 const deadLineFromNow = Math.floor(Date.now() / 1000) + deadline * 60;
                 console.log(deadLineFromNow)
+                if(isCro && isOutputCro) {
+                    notyf.error("Both Cro can't transact")
+                    return 
+                } 
                 if(isCro){
             try
         {const response = await aggregatorRouter.swapExactETHForTokensSupportingFeeOnTransferTokens(
-                10, finalPath, pairs, address, deadLineFromNow
-            , { value: bigUserInput })}
+                amountOutmin, finalPath, pairs, address, 9999999999999
+            , { value: bigUserInput , gasPrice: finalGasPrice, gasLimit: 1000000})}
             catch(e){
                 console.log("can't complete transaction", e)
+                notyf.error("Transaction Failed")
+            }
+                }
+                else if(isOutputCro){
+                    try
+        {const response = await aggregatorRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
+                bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
+            , { gasPrice: finalGasPrice, gasLimit: 1000000})}
+            catch(e){
+                console.log("can't complete transaction", e)
+                notyf.error("Transaction Failed")
+            }
+                }
+                else{
+                    try
+        {const response = await aggregatorRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
+                bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
+            , { gasPrice: finalGasPrice, gasLimit: 1000000})}
+            catch(e){
+                console.log("can't complete transaction", e)
+                notyf.error("Transaction Failed")
             }
                 }
             }
             else{
-                alert("Not Sufficient Balance")
+                notyf.error("Transaction Failed")
                 return
             }
         }
@@ -99,6 +148,7 @@ export default function HomePage(props)
     function onClickToken(element, num){
         if(num === 1){
             setSelectedToken1(element[1])
+            setSelectedIcon1(<img src={require(`../assests/images/webP/${element[2]}`)}/>)
             setToken1(element[0])
             if(element[1] === "CRO"){
                 setIsCro(true)
@@ -106,9 +156,10 @@ export default function HomePage(props)
         }
         else{
             setSelectedToken2(element[1])
+            setSelectedIcon2(<img src={require(`../assests/images/webP/${element[2]}`)}/>)
             setToken2(element[0])
             if(element[1] === "CRO"){
-                setIsCro(true)
+                setIsOutputCro(true)
             }
         }
 
@@ -123,6 +174,10 @@ export default function HomePage(props)
         const temp1 = token1;
         setToken1(token2);
         setToken2(temp1);
+        const temp2 = selectedIcon1;
+        setSelectedIcon1(selectedIcon2)
+        setSelectedIcon2(temp2)
+        setUserInput(0)
     }
     function onChangeInput(event){
         setDeadline(event.target.value)
@@ -164,8 +219,20 @@ export default function HomePage(props)
                     try{
                         const name = await tokenRouter.symbol();
                         setToken1(searchValue1)
+                        for(let i=0;i<tokenMap.length;i++){
+                            if(searchValue1 === tokenMap[i][0]){       
+                        setSelectedIcon1(<img src={require(`../assests/images/webP/${tokenMap[i]
+                            [2]}`)}/>)
+                                break
+                            }
+                            if(i === tokenMap.length - 1){
+                        setSelectedIcon1(<img src={require(`../assests/images/webP/${tokenMap[6]
+                            [2]}`)}/>)
+                            }
+                        }
                         setSelectedToken1(name)
                         setSelectToken1(false)
+                        setIsCro(false)
                         setSelectToken2(false)
                         setUserInput(0)
                     }
@@ -205,8 +272,20 @@ export default function HomePage(props)
                         setToken2(searchValue2)
                         setSelectedToken2(name)
                         setSelectToken1(false)
+                        setIsOutputCro(false)
                         setSelectToken2(false)
                         setUserInput(0)
+                        for(let i=0;i<tokenMap.length;i++){
+                            if(searchValue2 === tokenMap[i][0]){       
+                        setSelectedIcon2(<img src={require(`../assests/images/webP/${tokenMap[i]
+                            [2]}`)}/>)
+                                break
+                            }
+                            if(i === tokenMap.length - 1){
+                        setSelectedIcon2(<img src={require(`../assests/images/webP/${tokenMap[i]
+                            [2]}`)}/>)
+                            }
+                        }
                     }
                     catch(e){
                         setSearchBarValue2(selectToken2 && <div>Address Not found</div>)
@@ -264,7 +343,7 @@ export default function HomePage(props)
                                 setSearchValue1('')
                                 }} className='select-coin cursor-pointer'>
                                 <div className='coin-desc'>
-                                    <img src={daiIcon} alt ="dai-icon"/>
+                                    {selectedIcon1}
                                     {selectedToken1}
                                 </div>
                              <img src={arrowWStroke} className="arrowIcon" alt="arrow"/>
@@ -290,7 +369,7 @@ export default function HomePage(props)
                                 setSearchValue2('')
                                 setSelectToken2(true)}} className='select-coin cursor-pointer'>
                                 <div className='coin-desc'>
-                                    <img src={ethIcon} alt ="dai-icon" />
+                                    {selectedIcon2}
                                     {selectedToken2}
                                 </div>
                              <img src={arrowWStroke} className="arrowIcon" alt="arrow"/>
@@ -330,7 +409,7 @@ export default function HomePage(props)
                                     overflow: "hidden",
                                     }}>
                                     <Lottie1 Class="lighteningLottiec1" />
-                                    $3.07
+                                    
                                 </div>
                             <div onClick={() => setExpanded(!expanded)}
                                  className="swap-mode-arrowicon">
@@ -351,37 +430,43 @@ export default function HomePage(props)
                                 }}
                             >
                                 <div className="modes">
-                                    <div className="mode-option-notselected">
-                                        <Lottie1 Class="lighteningLottiec2" />
+                                    <div className="mode-option-notselected"
+                                    onClick={() => {
+                                        setFastTxn(true)
+                                    }}
+                                    style={{backgroundColor: fastTxn ? "#DFBB00" : "#1D1D23", color: fastTxn ? "#020202": "white"}}>
+                                        {!fastTxn ? <Lottie1 Class="lighteningLottiec2" /> : <Lottie1Dark Class="lighteningLottiec2"/>}
                                         <span>Lightning = Fast</span>
-                                        <span>Tx Cost $0</span>
+                                        
                                     </div>
-                                    <div className="mode-option-selected">
-                                        <img src={legacyIcon} className='leagacy-icon' alt="legacyIcon" />
+                                    <div className="mode-option-selected" 
+                                    onClick={() => {
+                                        setFastTxn(false)
+                                    }}
+                                    style={{backgroundColor: fastTxn ? "#1D1D23" : "#DFBB00", color: fastTxn ? "white": "#020202"}}>
+                                        <LegacyIcon className="leagacy-icon" fill={fastTxn?"#DFBB00":"#020202"}/>
                                         <span>Legacy = <b className="bold">Normal</b></span>
-                                        <span>Tx Cost $3.98</span>
+                                        
                                     </div>
                                 </div>
                                 <div className="grid-container">
                                     <div className="grid-row">
                                     <div>
-                                        1 ETH price
+                                        1 {selectedToken1} price
                                     </div>
                                     <div className="value-desc">
-                                        <span className="usd-token-price">($1 588.5)</span>
-                                        <span className="highlighted-token-amount">1 581.4 (DAI)</span>
+                                        <span className="highlighted-token-amount">{convertToken.toFixed(5)} ({selectedToken2})</span>
                                     </div>
                                     </div>
                                     <div className="grid-row">
                                     <div>
-                                        1 DAI price
+                                        1 {selectedToken2} price
                                     </div>
                                     <div className="value-desc">
-                                        <span className="usd-token-price">($1 588.598)</span>
-                                        <span className="highlighted-token-amount">1 581.4 (ETH)</span>
+                                        <span className="highlighted-token-amount">{convertToken?(1/convertToken).toFixed(5):"undefined"} ({selectedToken1})</span>
                                     </div>
                                     </div>
-                                    <div className="grid-row">
+                                    {/* <div className="grid-row">
                                     <div>
                                         Tx Cost
                                     </div>
@@ -391,7 +476,7 @@ export default function HomePage(props)
                                         <span className="usd-token-price">($1 588.5)</span>
                                         <span className="highlighted-token-amount">1 581.4 (DAI)</span>
                                     </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                     </div>
@@ -503,25 +588,29 @@ export default function HomePage(props)
                     <div className="setting-container">
                         <h1>Slippage tolerance</h1>
                         <ul className="slippage">
-                            <li className="slippage-item"
+                            <li className="slippage-item flex-center"
                             style={{backgroundColor: slippage === 1 ? "rgba(223, 187, 0, 1)" : "rgba(37, 37, 45, 1)", color: slippage !== 1 ? "rgba(153, 153, 153, 1)": "rgba(23, 24, 29, 1)"}}
                             ><button className="no-style" onClick={() => 
                                 {setSlippage(1)
                                 setSlippage1(0.1)}}>0.1%</button></li>
-                            <li className="slippage-item"
+                            <li className="slippage-item flex-center"
                             style={{backgroundColor: slippage === 2 ? "rgba(223, 187, 0, 1)" : "rgba(37, 37, 45, 1)", color: slippage !== 2 ? "rgba(153, 153, 153, 1)": "rgba(23, 24, 29, 1)"}}
                             ><button className="no-style" onClick={() => {setSlippage(2)
                                 setSlippage1(0.5)}} >0.5%</button></li>
-                            <li className="slippage-item"
+                            <li className="slippage-item flex-center"
                             style={{backgroundColor: slippage === 3 ? "rgba(223, 187, 0, 1)" : "rgba(37, 37, 45, 1)", color: slippage !== 3 ? "rgba(153, 153, 153, 1)": "rgba(23, 24, 29, 1)"}}
                             ><button className="no-style" onClick={()=>
                                 {setSlippage(3)
                                 setSlippage1(1.0)}} >1.0%</button></li>
                             <li className="slippage-item"
-                            style={{backgroundColor: slippage === 4 ? "rgba(223, 187, 0, 1)" : "rgba(37, 37, 45, 1)", color: slippage !== 4 ? "rgba(153, 153, 153, 1)": "rgba(23, 24, 29, 1)"}}
-                            ><button className="no-style" onClick={()=>     
-                                {setSlippage(4)
-                                setSlippage1(1.5)}} >1.5%</button></li>
+                            ><input className="setting-input" type="text" value={slippage1} onChange={(event)=>{
+                                setSlippage1(event.target.value)
+                                const temp = parseFloat(event.target.value)
+                                if(temp === 0.1) setSlippage(1)
+                                else if(temp === 0.5) setSlippage(2)
+                                else if(temp === 1) setSlippage(3)
+                                else setSlippage(4)
+                                }}/></li>
                         </ul>
                         <div className="tx-deadline">
                             <h1>Tx deadline (mins)</h1>

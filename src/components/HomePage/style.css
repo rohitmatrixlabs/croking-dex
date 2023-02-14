@@ -554,6 +554,11 @@ button:focus {
     border-radius: 20px;
     margin-top: 2rem;
 }
+.flex-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .tx-deadline{
     display: flex;

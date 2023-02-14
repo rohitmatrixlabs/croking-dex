@@ -16,7 +16,7 @@ import { ethers } from 'ethers';
 
 
 export default function SwapPrice(props) {
-    const {token1, token2, userInput, setOutPutTokens, setConvertToken, isCro, setParameters} = props
+    const {token1, token2, userInput, setOutPutTokens, setConvertToken, isCro, setParameters, reload} = props
     const { data: signer, isError, isLoading } = useSigner()
     const provider = useProvider();
     const [finalAmount, setFinalAmount] = useState(0)
@@ -26,7 +26,7 @@ export default function SwapPrice(props) {
     const [balance, setBalance] = useState(0)
     useEffect(()=>{
         setOutPutTokens(userInput*finalAmount)
-    }, [userInput])
+    }, [userInput, token1, token2, reload])
     async function getAmountsOutFromDex(path, amountsIn, contract){
         try{
             const val = await contract.getAmountsOut(amountsIn, path);
@@ -69,7 +69,7 @@ export default function SwapPrice(props) {
     }
     useEffect(() => {
         getFinalAmount()
-    },[token1, token2])
+    },[token1, token2, reload])
 
     useEffect(()=>{
         const _provider = provider?provider: new ethers.providers.JsonRpcProvider(value.rpcUrl)
@@ -116,12 +116,12 @@ export default function SwapPrice(props) {
         if(window.ethereum){
             getBalance();
         }
-    }, [token1])
+    }, [token1, reload])
 
     useEffect(()=>{
         console.log(balance)
         setParameters([balance, router, finalPath, pairs])
-    }, [balance, router, finalPath, pairs])
+    }, [balance, router, finalPath, pairs, reload])
   return (
     <>
     <div>{}</div>

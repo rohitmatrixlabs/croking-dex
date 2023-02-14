@@ -18,6 +18,7 @@ export default function App() {
   const [convertToken, setConvertToken] = useState(1)
   const [parameters, setParameters] = useState([])
   const [isCro, setIsCro] = useState(false)
+  const [reload, setReload] = useState(false)
   const { chains, provider } = configureChains(
     [cronos],
     [publicProvider(), 
@@ -44,8 +45,8 @@ export default function App() {
       >
     <div className='App'>
       <Navbar/>
-      <HomePage setToken1={setToken1} setToken2={setToken2} setUserInput={setUserInput} userInput={userInput} outPutTokens={outPutTokens} convertToken={convertToken} token1={token1} token2={token2} setIsCro={setIsCro} parameters={parameters} isCro={isCro}/>
-      <SwapPrice token1={token1} token2={token2} userInput={userInput} setOutPutTokens={setOutPutTokens} setConvertToken={setConvertToken} isCro={isCro} setParameters={setParameters}/>
+      <HomePage setToken1={setToken1} setToken2={setToken2} setUserInput={setUserInput} userInput={userInput} outPutTokens={outPutTokens} convertToken={convertToken} token1={token1} token2={token2} setIsCro={setIsCro} parameters={parameters} isCro={isCro} setReload={setReload} reload={reload}/>
+      <SwapPrice token1={token1} token2={token2} userInput={userInput} setOutPutTokens={setOutPutTokens} setConvertToken={setConvertToken} isCro={isCro} setParameters={setParameters} reload={reload}/>
       <Footer/>
     </div>
     </RainbowKitProvider>
