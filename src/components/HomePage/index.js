@@ -64,7 +64,6 @@ export default function HomePage(props)
     
     async function onClickSwap(){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        console.log(parseFloat(userInput), "biadshfeworigdksnfionsg")
         if(parseFloat(userInput) === 0){
             notyf.error("Add input Amount")
             return
@@ -89,7 +88,6 @@ export default function HomePage(props)
             const router = parameters[1];
             const finalPath = parameters[2];
             const pairs = parameters[3];
-            console.log(balance, router, finalPath, pairs)
             const tokenRouter = tokenContract(provider, token1)
             const outPutTokenRouter = tokenContract(provider, token2)
             const decimals = await tokenRouter.decimals()
@@ -99,19 +97,17 @@ export default function HomePage(props)
                 const bigOut = ethers.utils.parseUnits(outPutTokens.toFixed(outDecimals).toString(), outDecimals)
                 const amountOutmin = ethers.BigNumber.from(bigOut).mul((100-slippage1.toFixed(1))*10).div(1000)    
                 const aggregatorRouter = aggregatorContract(signer);
-                console.log(amountOutmin, address)
                 const deadLineFromNow = Math.floor(Date.now() / 1000) + deadline * 60;
-                console.log(deadLineFromNow)
                 if(isCro && isOutputCro) {
                     notyf.error("Both Cro can't transact")
                     return 
                 } 
                 if(isCro){
+                    console.log(finalPath, pairs, address)
             try
         {const response = await aggregatorRouter.swapExactETHForTokensSupportingFeeOnTransferTokens(
-                amountOutmin, finalPath, pairs, address, 9999999999999
-            , { value: bigUserInput , gasPrice: finalGasPrice, gasLimit: 
-                1000000})
+                2, finalPath, pairs, address, 9999999999999
+            , { value: bigUserInput , gasPrice: finalGasPrice})
             notyf.success("Transaction Success")}
             catch(e){
                 console.log("can't complete transaction", e)
@@ -123,7 +119,7 @@ export default function HomePage(props)
                         const response = await 
             aggregatorRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
                 bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
-            , { gasPrice: finalGasPrice, gasLimit: 1000000})
+            , { gasPrice: finalGasPrice})
             notyf.success("Transaction Success")
         }
             
@@ -133,10 +129,11 @@ export default function HomePage(props)
             }
                 }
                 else{
+                    console.log(finalPath, pairs, address, isCro, isOutputCro)
                     try
         {const response = await aggregatorRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
                 bigUserInput, amountOutmin, finalPath, pairs, address, 9999999999999
-            , { gasPrice: finalGasPrice, gasLimit: 1000000})
+            , { gasPrice: finalGasPrice})
             notyf.success("Transaction Success")}
             catch(e){
                 console.log("can't complete transaction", e)
@@ -160,6 +157,9 @@ export default function HomePage(props)
             if(element[1] === "CRO"){
                 setIsCro(true)
             }
+            else{
+                setIsCro(false)
+            }
         }
         else{
             setSelectedToken2(element[1])
@@ -167,6 +167,9 @@ export default function HomePage(props)
             setToken2(element[0])
             if(element[1] === "CRO"){
                 setIsOutputCro(true)
+            }
+            else{
+                setIsOutputCro(false)
             }
         }
 
@@ -244,7 +247,6 @@ export default function HomePage(props)
                         setUserInput(0)
                     }
                     catch(e){
-                        console.log("NOOOOOOOOO sarrrrrrrrrrrr")
                         setSearchBarValue(<div>Address Not found</div>)
                     }
                 }
@@ -299,7 +301,6 @@ export default function HomePage(props)
                     }
                 }
                 else{
-                    console.log("NOOOOOOOOO sarrrrrrrrrrrr")
                     setSearchBarValue2(selectToken2 && <div>Address Not found</div>)
                     
                 }

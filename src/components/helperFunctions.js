@@ -65,7 +65,7 @@ export function allSubsets(nums) {
     const m = arr[0].length;
     for(var i = 0; i < n; i++){
         for(var j = 0; j < m; j++){
-            if(val < BigNumber.from(arr[i][j])){
+            if(BigNumber.from(arr[i][j]).gt(val)){
                 val = BigNumber.from(arr[i][j]);
                 row = i;
                 col = j;

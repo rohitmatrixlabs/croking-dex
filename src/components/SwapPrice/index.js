@@ -24,9 +24,10 @@ export default function SwapPrice(props) {
     const [finalPath, setFinalPath] = useState([token1, token2])
     const [pairs, setPairs] = useState()
     const [balance, setBalance] = useState(0)
+    const [routerFinalPath, setRouterFinalPath] = useState()
     useEffect(()=>{
         setOutPutTokens(userInput*finalAmount)
-    }, [userInput, token1, token2, reload])
+    }, [userInput, token1, token2])
     async function getAmountsOutFromDex(path, amountsIn, contract){
         try{
             const val = await contract.getAmountsOut(amountsIn, path);
@@ -57,11 +58,17 @@ export default function SwapPrice(props) {
         const multiAction = allPaths.map((path) => getAllAmountsFromDex(path, inputBigNumber, dexContracts))
         Promise.all(multiAction).then((results) => {
             const item = findMax(results)
+            console.log(results, item)
             const result = parseFloat(ethers.utils.formatUnits(item[0], deci2))
             setFinalAmount(result)
             setConvertToken(result)
-            setRouter(dexContracts[item[1]])
-            setFinalPath([token1].concat(allPaths[item[1]], [token2]))
+            const tempContract = dexContracts[item[1]]
+            setRouter(tempContract)
+            console.log(tempContract, "nonononon")
+            const tempPath = [token1].concat(allPaths[item[1]], [token2]);
+            setFinalPath(tempPath)
+            console.log(tempPath, "nonononon")
+            setRouterFinalPath([tempContract, tempPath])
         })
         .catch(e => console.log(e))
     }
@@ -69,18 +76,18 @@ export default function SwapPrice(props) {
     }
     useEffect(() => {
         getFinalAmount()
-    },[token1, token2, reload])
+    },[token1, token2])
 
     useEffect(()=>{
         const _provider = provider?provider: new ethers.providers.JsonRpcProvider(value.rpcUrl)
         async function findPairs(){
             try{
-                const factory = await router.factory()
+                const factory = await routerFinalPath[0].factory()
                 const factoryRouter = factoryContract(_provider, factory)
                 let temp = []
-                for(let i = 0; i<(finalPath.length - 1); i++){
-                    const pair = await factoryRouter.getPair(finalPath[i], 
-                        finalPath[i+1])
+                for(let i = 0; i<(routerFinalPath[1].length - 1); i++){
+                    const pair = await factoryRouter.getPair(routerFinalPath[1][i], 
+                        routerFinalPath[1][i+1])
                     temp.push(pair)
                 }
                 setPairs(temp)
@@ -90,9 +97,10 @@ export default function SwapPrice(props) {
             }
             
         }
-        if(router !== null && router !== undefined)
+        if(routerFinalPath[0] !== null && routerFinalPath[0] !== undefined)
+            console.log("pairs kyu nhi horha bro", routerFinalPath[0], routerFinalPath[1])
             findPairs();
-    }, [router, finalPath])
+    }, [routerFinalPath])
     async function getBalance(){
         try{const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
@@ -115,11 +123,11 @@ export default function SwapPrice(props) {
         if(window.ethereum){
             getBalance();
         }
-    }, [token1, reload])
+    }, [token1])
 
     useEffect(()=>{
         setParameters([balance, router, finalPath, pairs])
-    }, [balance, router, finalPath, pairs, reload])
+    }, [balance, router, finalPath, pairs])
   return (
     <>
     <div>{}</div>
