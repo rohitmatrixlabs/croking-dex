@@ -7,6 +7,13 @@ button:focus {
 }
 
 
+.dex_connect{
+    width: 35vh !important;
+    text-align: center;
+    height: 54px;
+    font-size: 20px;
+}
+
 .content-wrapper
 {
     display: flex;
@@ -323,6 +330,14 @@ button:focus {
     align-items: center;
     padding: 0 1em;
     gap: 2rem;
+}
+
+
+.btn-wrapper button{
+    width: 35vh !important;
+    text-align: center !important;
+    height: 54px !important;
+    font-size: 20px !important;
 }
 
 .select-token-header{

@@ -515,8 +515,8 @@ export default function HomePage(props)
                             </div>
                     </div>
                     <div className="btn-wrapper">
-                    {!signer && <ConnectButton chainStatus="none" showBalance={false} accountStatus={'avatar'}/>}
-                    {(signer !== undefined && signer !== null) && <button className="connect-wallet-btn" onClick={onClickSwap}>Swap -{">"}</button>}
+                    {!signer && <ConnectButton className="dex_connect" chainStatus="none" showBalance={false} accountStatus={'avatar'}/>}
+                    {(signer !== undefined && signer !== null) && <button className="connect-wallet-btn dex_connect" onClick={onClickSwap}>Swap</button>}
                     </div>
                 </div> 
             ) :  ( 

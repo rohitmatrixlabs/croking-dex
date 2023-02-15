@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
+import merge from 'lodash.merge';
 import './style.css'
 import HomePage from './components/HomePage'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import SwapPrice from './components/SwapPrice'
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { getDefaultWallets, RainbowKitProvider, darkTheme, Theme} from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { cronos } from './components/helperConstants';
@@ -43,6 +44,13 @@ export default function App() {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider
         chains={chains}
+        theme={darkTheme({
+          accentColor: '#E2A700',
+          accentColorForeground: 'black',
+          overlayBlur: 'small',
+          borderRadius: 'medium',
+
+        })}
       >
     <div className='App'>
       <Navbar/>
