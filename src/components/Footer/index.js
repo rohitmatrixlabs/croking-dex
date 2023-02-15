@@ -16,11 +16,11 @@ export default function Footer()
               <p className='footer-text'>CroKing</p>
             </div>
             <div className='social-icons-div'>
-              <img src={telegramIcon} className="social-icons" alt="telegram-icon"/>
-              <img src={twitterIcon} className="social-icons" alt="twitter-icon"/>
-              <img src={discordIcon} className="social-icons" alt="discord-icon"/>
+            <a target="_blank" rel="noreferrer" href="https://t.me/CroKingOfficial"><img src={telegramIcon} className="social-icons" alt="telegram-icon"/></a>
+            <a target="_blank" rel="noreferrer" href="https://twitter.com/crokingtoken"> <img src={twitterIcon} className="social-icons" alt="twitter-icon"/></a>
+            <a target="_blank" rel="noreferrer" href="https://discord.gg/BPVuZQH3Cz"><img src={discordIcon} className="social-icons" alt="discord-icon"/></a>
             </div>
-          </div>
+            </div>
         </div>
         </footer>
     );
