@@ -27,7 +27,7 @@ import { Notyf } from "notyf";
 import 'notyf/notyf.min.css';
 export default function HomePage(props)
 {
-    const {setToken1, setToken2, setUserInput, userInput, outPutTokens, convertToken, token1, token2, setIsCro, parameters, isCro, setReload, reload} = props
+    const {setToken1, setToken2, setUserInput, userInput, outPutTokens, convertToken, token1, token2, setIsCro, parameters, isCro, setReload, reload, setTokens, tokens} = props
     const notyf = new Notyf({
         duration: 3000,
         position: { x: "right", y: "top" },
@@ -89,12 +89,12 @@ export default function HomePage(props)
             const router = parameters[1];
             const finalPath = parameters[2];
             const pairs = parameters[3];
-            const tokenRouter = tokenContract(provider, token1)
-            const outPutTokenRouter = tokenContract(provider, token2)
+            const tokenRouter = tokenContract(provider, tokens[0])
+            const outPutTokenRouter = tokenContract(provider, tokens[1])
             const decimals = await tokenRouter.decimals()
             const bigUserInput = ethers.utils.parseUnits(userInput.toString(), decimals);
             if(!isCro){
-                await checkAllowance(token1, address, signer, bigUserInput)
+                await checkAllowance(tokens[0], address, signer, bigUserInput)
             }
             if(ethers.BigNumber.from(bigUserInput).lt(balance)){
                 const outDecimals = await outPutTokenRouter.decimals()
@@ -166,6 +166,7 @@ export default function HomePage(props)
             setSelectedToken1(element[1])
             setSelectedIcon1(<img src={require(`../assests/images/webP/${element[2]}`)}/>)
             setToken1(element[0])
+            setTokens([element[0], token2])
             if(element[1] === "CRO"){
                 setIsCro(true)
             }
@@ -177,6 +178,7 @@ export default function HomePage(props)
             setSelectedToken2(element[1])
             setSelectedIcon2(<img src={require(`../assests/images/webP/${element[2]}`)}/>)
             setToken2(element[0])
+            setTokens([token1, element[0]])
             if(element[1] === "CRO"){
                 setIsOutputCro(true)
             }
@@ -190,12 +192,22 @@ export default function HomePage(props)
         setUserInput(0)
     }
     function onClickReverse(){
+        if(isCro && !isOutputCro){
+            setIsCro(false)
+            setIsOutputCro(true)
+        }
+        else if(!isCro && isOutputCro){
+            setIsCro(true)
+            setIsOutputCro(false)
+        }
         const temp = selectedToken1;
         setSelectedToken1(selectedToken2)
         setSelectedToken2(temp)
         const temp1 = token1;
+        const temp3 = token2;
         setToken1(token2);
         setToken2(temp1);
+        setTokens([temp3, temp1])
         const temp2 = selectedIcon1;
         setSelectedIcon1(selectedIcon2)
         setSelectedIcon2(temp2)
@@ -241,6 +253,7 @@ export default function HomePage(props)
                     try{
                         const name = await tokenRouter.symbol();
                         setToken1(searchValue1)
+                        setTokens([searchValue1, token2])
                         for(let i=0;i<tokenMap.length;i++){
                             if(searchValue1 === tokenMap[i][0]){       
                         setSelectedIcon1(<img src={require(`../assests/images/webP/${tokenMap[i]
@@ -291,6 +304,7 @@ export default function HomePage(props)
                     try{
                         const name = await tokenRouter.symbol();
                         setToken2(searchValue2)
+                        setTokens([token1, searchValue2])
                         setSelectedToken2(name)
                         setSelectToken1(false)
                         setIsOutputCro(false)

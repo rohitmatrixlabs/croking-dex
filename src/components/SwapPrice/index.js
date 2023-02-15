@@ -16,18 +16,18 @@ import { ethers } from 'ethers';
 
 
 export default function SwapPrice(props) {
-    const {token1, token2, userInput, setOutPutTokens, setConvertToken, isCro, setParameters, reload} = props
+    const {token1, token2, userInput, setOutPutTokens, setConvertToken, isCro, setParameters, reload, tokens, setTokens} = props
     const { data: signer, isError, isLoading } = useSigner()
     const provider = useProvider();
     const [finalAmount, setFinalAmount] = useState(0)
     const [router, setRouter] = useState()
-    const [finalPath, setFinalPath] = useState([token1, token2])
+    const [finalPath, setFinalPath] = useState(tokens)
     const [pairs, setPairs] = useState()
     const [balance, setBalance] = useState(0)
     const [routerFinalPath, setRouterFinalPath] = useState([])
     useEffect(()=>{
         setOutPutTokens(userInput*finalAmount)
-    }, [userInput, token1, token2])
+    }, [userInput, tokens])
     async function getAmountsOutFromDex(path, amountsIn, contract){
         try{
             const val = await contract.getAmountsOut(amountsIn, path);
@@ -37,7 +37,7 @@ export default function SwapPrice(props) {
         }
     }
     async function getAllAmountsFromDex(path, amountsIn, dexContracts){
-        const temp = [token1].concat(path, [token2])
+        const temp = [tokens[0]].concat(path, [tokens[1]])
         const action = dexContracts.map((contract) => getAmountsOutFromDex(temp, amountsIn, contract))
         return Promise.all(action).then((results) => {return results}).catch(e => console.log("hello error"))
 
@@ -49,10 +49,10 @@ export default function SwapPrice(props) {
         const vssRouter = vssContract(_provider)
         const croDexRouter = croDexContract(_provider)
         const candySwapRouter = candySwapContract(_provider)
-        const token1Contract = tokenContract(_provider, token1)
+        const token1Contract = tokenContract(_provider, tokens[0])
         const deci1 = await token1Contract.decimals()
         const inputBigNumber = BigNumber.from(1).mul(BigNumber.from(10).pow(deci1))
-        const token2Contract = tokenContract(_provider, token2)
+        const token2Contract = tokenContract(_provider, tokens[1])
         const deci2 = await token2Contract.decimals()
         const dexContracts = [photonSwapRouter, mmfRouter, croDexRouter, vssRouter, candySwapRouter];
         const multiAction = allPaths.map((path) => getAllAmountsFromDex(path, inputBigNumber, dexContracts))
@@ -65,7 +65,7 @@ export default function SwapPrice(props) {
             const tempContract = dexContracts[item[1]]
             setRouter(tempContract)
             console.log(tempContract, "nonononon")
-            const tempPath = [token1].concat(allPaths[item[1]], [token2]);
+            const tempPath = [tokens[0]].concat(allPaths[item[1]], [tokens[1]]);
             setFinalPath(tempPath)
             console.log(tempPath, "nonononon")
             setRouterFinalPath([tempContract, tempPath])
@@ -76,7 +76,8 @@ export default function SwapPrice(props) {
     }
     useEffect(() => {
         getFinalAmount()
-    },[token1, token2])
+        
+    },[tokens])
 
     useEffect(()=>{
         const _provider = provider?provider: new ethers.providers.JsonRpcProvider(value.rpcUrl)
@@ -105,7 +106,7 @@ export default function SwapPrice(props) {
         try{const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const address = await provider.getSigner().getAddress();
-        const token1Contract = tokenContract(provider, token1)
+        const token1Contract = tokenContract(provider, tokens[0])
         let balance1 = 0;
         if(isCro){
             balance1 = await provider.getBalance(address)
