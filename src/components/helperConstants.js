@@ -116,7 +116,8 @@ export const tokenMap =
         ["0x0224010BA2d567ffa014222eD960D1fa43B8C8E1", "MINT", "minted.webp"],
         ["0xe6801928061CDbE32AC5AD0634427E140EFd05F9", "BEEFY", "beefy.webp"],
         ["0x39bC1e38c842C60775Ce37566D03B41A7A66C782", "FERRO", "ferro.webp"],
-        ["0x0dCb0CB0120d355CdE1ce56040be57Add0185BAa", "AUTO", "auto.webp"]
+        ["0x0dCb0CB0120d355CdE1ce56040be57Add0185BAa", "AUTO", "auto.webp"],
+        ["0xe44Fd7fCb2b1581822D0c862B68222998a0c299a", "ETH", "eth.webp"]
     ]
 // export const defaultTokenSet = new Set(["0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
 // "0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03",
