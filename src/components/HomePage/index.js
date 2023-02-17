@@ -49,7 +49,7 @@ export default function HomePage(props) {
     position: { x: "right", y: "top" },
     dismissible: true,
   });
-  const [slippage1, setSlippage1] = useState(0.5);
+  const [slippage1, setSlippage1] = useState(95);
   const [deadline, setDeadline] = useState(20);
   const [expanded, setExpanded] = useState(false);
   const [signer, setSigner] = useState(null);
@@ -61,7 +61,7 @@ export default function HomePage(props) {
   const [selectedToken1, setSelectedToken1] = useState("USDT");
   const [selectedToken2, setSelectedToken2] = useState("ETH");
   const [isSetting, setIsSetting] = useState(false);
-  const [slippage, setSlippage] = useState(2);
+  const [slippage, setSlippage] = useState(4);
   const [searchBarValue, setSearchBarValue] = useState(<div></div>);
   const [searchBarValue2, setSearchBarValue2] = useState(<div></div>);
   const [selectedIcon1, setSelectedIcon1] = useState(
@@ -127,9 +127,8 @@ export default function HomePage(props) {
         const temp = parseInt(
           (100 - parseFloat(parseFloat(slippage1).toFixed(1))) * 10
         );
-        console.log(temp);
         const amountOutmin = ethers.BigNumber.from(bigOut).mul(temp).div(1000);
-        // console.log(ethers.utils.parseUnits(amountOutmin, outDecimals))
+        // console.log(ethers.utils.formatUnits(amountOutmin, outDecimals));
         const aggregatorRouter = aggregatorContract(signer);
         const deadLineFromNow = Math.floor(Date.now() / 1000) + deadline * 60;
         if (isCro && isOutputCro) {
@@ -140,15 +139,14 @@ export default function HomePage(props) {
           try {
             const response =
               await aggregatorRouter.swapExactETHForTokensSupportingFeeOnTransferTokens(
-                2,
+                amountOutmin,
                 finalPath,
                 pairs,
                 address,
-                9999999999999,
+                deadLineFromNow,
                 { value: bigUserInput, gasPrice: finalGasPrice }
               );
             await response.wait();
-            console.log(response, "LOLOLOLLOLOL");
             notyf.success("Transaction Success");
           } catch (e) {
             console.log("can't complete transaction", e);
@@ -160,11 +158,11 @@ export default function HomePage(props) {
             const response =
               await aggregatorRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
                 bigUserInput,
-                2,
+                amountOutmin,
                 finalPath,
                 pairs,
                 address,
-                9999999999999,
+                deadLineFromNow,
                 { gasPrice: finalGasPrice }
               );
             await response.wait();
@@ -181,11 +179,11 @@ export default function HomePage(props) {
             const response =
               await aggregatorRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
                 bigUserInput,
-                2,
+                amountOutmin,
                 finalPath,
                 pairs,
                 address,
-                9999999999999,
+                deadLineFromNow,
                 { gasPrice: finalGasPrice }
               );
             await response.wait();
@@ -294,11 +292,12 @@ export default function HomePage(props) {
         var temp = await provider.getSigner().getAddress();
         setSigner(temp);
       } catch (e) {
+        setSigner(null);
         console.log("wallet not connected");
       }
     };
     if (window.ethereum) fn();
-  }, []);
+  });
   const _provider = new ethers.providers.JsonRpcProvider(value.rpcUrl);
   useEffect(() => {
     async function searchBar1() {
@@ -679,14 +678,14 @@ export default function HomePage(props) {
                 </div>
               </div>
               <div className="btn-wrapper">
-                {!signer && (
+                {/* {!signer && (
                   <ConnectButton
                     className="dex_connect"
                     chainStatus="none"
                     showBalance={false}
                     accountStatus={"avatar"}
                   />
-                )}
+                )} */}
                 {signer !== undefined && signer !== null && (
                   <button
                     className="connect-wallet-btn dex_connect"

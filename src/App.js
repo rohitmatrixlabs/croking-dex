@@ -27,17 +27,7 @@ export default function App() {
   const [isCro, setIsCro] = useState(false);
   const [reload, setReload] = useState(false);
   const [tokenBalance, setTokenBalance] = useState(0);
-  const { chains, provider } = configureChains(
-    [cronos],
-    [
-      publicProvider(),
-      jsonRpcProvider({
-        rpc: () => ({
-          http: `https://evm.cronos.org/`,
-        }),
-      }),
-    ]
-  );
+  const { chains, provider } = configureChains([cronos], [publicProvider()]);
   const { connectors } = getDefaultWallets({
     appName: "My RainbowKit App",
     chains,

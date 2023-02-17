@@ -101,7 +101,7 @@ export default function SwapPrice(props) {
           const result = parseFloat(ethers.utils.formatUnits(item[0], deci2));
           setFinalAmount(result);
           setConvertToken(result);
-          const tempContract = dexContracts[item[1]];
+          const tempContract = dexContracts[item[2]];
           setRouter(tempContract);
           const tempPath = [tokens.token1].concat(allPaths[item[1]], [
             tokens.token2,
