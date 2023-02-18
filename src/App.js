@@ -15,7 +15,18 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { cronos } from "./components/helperConstants";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+const { chains, provider } = configureChains([cronos], [publicProvider()]);
+const { connectors } = getDefaultWallets({
+  appName: "My RainbowKit App",
+  chains,
+});
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
 export default function App() {
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const [tokens, setTokens] = useState({
     token1: "0x66e428c3f67a68878562e79A0234c1F83c208770",
     token2: "0xe44Fd7fCb2b1581822D0c862B68222998a0c299a",
@@ -27,16 +38,6 @@ export default function App() {
   const [isCro, setIsCro] = useState(false);
   const [reload, setReload] = useState(false);
   const [tokenBalance, setTokenBalance] = useState(0);
-  const { chains, provider } = configureChains([cronos], [publicProvider()]);
-  const { connectors } = getDefaultWallets({
-    appName: "My RainbowKit App",
-    chains,
-  });
-  const wagmiClient = createClient({
-    autoConnect: true,
-    connectors,
-    provider,
-  });
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider
@@ -63,6 +64,7 @@ export default function App() {
             tokens={tokens}
             setTokens={setTokens}
             tokenBalance={tokenBalance}
+            isDataLoading={isDataLoading}
           />
           <SwapPrice
             userInput={userInput}
@@ -74,6 +76,7 @@ export default function App() {
             tokens={tokens}
             setTokens={setTokens}
             setTokenBalance={setTokenBalance}
+            setIsDataLoading={setIsDataLoading}
           />
           <Footer />
         </div>

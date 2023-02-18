@@ -43,6 +43,7 @@ export default function HomePage(props) {
     setTokens,
     tokens,
     tokenBalance,
+    isDataLoading,
   } = props;
   const notyf = new Notyf({
     duration: 3000,
@@ -52,7 +53,7 @@ export default function HomePage(props) {
   const [slippage1, setSlippage1] = useState(95);
   const [deadline, setDeadline] = useState(20);
   const [expanded, setExpanded] = useState(false);
-  const [signer, setSigner] = useState(null);
+  const { data: signer, isError, isLoading } = useSigner();
   const [selectToken, setSelectToken] = useState(false);
   const [selectToken1, setSelectToken1] = useState(false);
   const [selectToken2, setSelectToken2] = useState(false);
@@ -83,10 +84,13 @@ export default function HomePage(props) {
     setTimeout(() => setIsRotating(false), 500); // rotate for 5 milliseconds
   };
 
+  const [isDisabled, setIsDisabled] = useState(false);
   async function onClickSwap() {
+    setIsDisabled(true);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     if (parseFloat(userInput) === 0) {
       notyf.error("Add input Amount");
+      setIsDisabled(false);
       return;
     }
     const feeData = await provider.getFeeData();
@@ -102,6 +106,7 @@ export default function HomePage(props) {
       const signer = temp[1];
       if (address === "" || signer === "") {
         notyf.error("Please Reconnect Your Wallet and Try Again");
+        setIsDisabled(false);
         return;
       }
       const balance = parameters[0]._hex;
@@ -133,6 +138,7 @@ export default function HomePage(props) {
         const deadLineFromNow = Math.floor(Date.now() / 1000) + deadline * 60;
         if (isCro && isOutputCro) {
           notyf.error("Both Cro can't transact");
+          setIsDisabled(false);
           return;
         }
         if (isCro) {
@@ -146,14 +152,14 @@ export default function HomePage(props) {
                 deadLineFromNow,
                 { value: bigUserInput, gasPrice: finalGasPrice }
               );
-            await response.wait();
-            notyf.success("Transaction Success");
+            if (response) {
+              await response.wait();
+              notyf.success("Transaction Success");
+            }
           } catch (e) {
-            console.log("can't complete transaction", e);
             notyf.error("Transaction Failed");
           }
         } else if (isOutputCro) {
-          console.log(finalPath, pairs, address, "outPutCro");
           try {
             const response =
               await aggregatorRouter.swapExactTokensForETHSupportingFeeOnTransferTokens(
@@ -166,15 +172,11 @@ export default function HomePage(props) {
                 { gasPrice: finalGasPrice }
               );
             await response.wait();
-            console.log(response, "LOLOLOLLOLOL");
             notyf.success("Transaction Success");
           } catch (e) {
-            console.log("can't complete transaction", e);
             notyf.error("Transaction Failed");
           }
         } else {
-          console.log(finalPath, pairs, address, "tokenTOtoken");
-          console.log(finalPath, pairs, address, isCro, isOutputCro);
           try {
             const response =
               await aggregatorRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
@@ -187,7 +189,6 @@ export default function HomePage(props) {
                 { gasPrice: finalGasPrice }
               );
             await response.wait();
-            console.log(response, "LOLOLOLLOLOL");
             notyf.success("Transaction Success");
           } catch (e) {
             console.log("can't complete transaction", e);
@@ -196,11 +197,14 @@ export default function HomePage(props) {
         }
       } else {
         notyf.error("Transaction Failed");
+        setIsDisabled(false);
         return;
       }
     } else {
       notyf.error("Reload the page and try again");
     }
+    setIsDisabled(false);
+    handleRefreshClick();
   }
   function onClickToken(element, num) {
     console.log(tokens);
@@ -284,20 +288,6 @@ export default function HomePage(props) {
       return ["", ""];
     }
   };
-
-  useEffect(() => {
-    const fn = async () => {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        var temp = await provider.getSigner().getAddress();
-        setSigner(temp);
-      } catch (e) {
-        setSigner(null);
-        console.log("wallet not connected");
-      }
-    };
-    if (window.ethereum) fn();
-  });
   const _provider = new ethers.providers.JsonRpcProvider(value.rpcUrl);
   useEffect(() => {
     async function searchBar1() {
@@ -509,9 +499,13 @@ export default function HomePage(props) {
                   </div>
                   <div className="token-input-row">
                     <div className="coin-name">{selectedToken1}</div>
-                    <div className="showBalanceOfToken">
-                      Balance = {tokenBalance}
-                    </div>
+                    {isDataLoading ? (
+                      <div className="loader"></div>
+                    ) : (
+                      <div className="showBalanceOfToken">
+                        Balance = {tokenBalance}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="swapIconDiv">
@@ -539,7 +533,15 @@ export default function HomePage(props) {
                         alt="arrow"
                       />
                     </div>
-                    <input className="input" type="text" value={outPutTokens} />
+                    {isDataLoading ? (
+                      <div className="loader translate-x-15"></div>
+                    ) : (
+                      <input
+                        className="input"
+                        type="text"
+                        value={outPutTokens}
+                      />
+                    )}
                   </div>
                   <div className="token-input-row">
                     <div className="coin-name">{selectedToken2}</div>
@@ -556,12 +558,14 @@ export default function HomePage(props) {
                     }}
                   >
                     <img src={InfoLogo} alt="info-logo" />
-                    {
+                    {isDataLoading ? (
+                      <div className="loader"></div>
+                    ) : (
                       <p>
                         1 {selectedToken1} = {convertToken.toFixed(4)}{" "}
                         {selectedToken2}
                       </p>
-                    }
+                    )}
                   </div>
                   <div
                     style={{
@@ -678,18 +682,19 @@ export default function HomePage(props) {
                 </div>
               </div>
               <div className="btn-wrapper">
-                {/* {!signer && (
+                {!signer && (
                   <ConnectButton
                     className="dex_connect"
                     chainStatus="none"
                     showBalance={false}
                     accountStatus={"avatar"}
                   />
-                )} */}
+                )}
                 {signer !== undefined && signer !== null && (
                   <button
                     className="connect-wallet-btn dex_connect"
                     onClick={onClickSwap}
+                    disabled={isDisabled}
                   >
                     Swap
                   </button>

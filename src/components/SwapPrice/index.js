@@ -37,6 +37,7 @@ export default function SwapPrice(props) {
     tokens,
     setTokens,
     setTokenBalance,
+    setIsDataLoading,
   } = props;
   const { data: signer, isError, isLoading } = useSigner();
   const provider = useProvider();
@@ -69,6 +70,7 @@ export default function SwapPrice(props) {
       .catch((e) => console.log("hello error"));
   }
   async function getFinalAmount() {
+    setIsDataLoading(true);
     try {
       const _provider = provider
         ? provider
@@ -113,10 +115,11 @@ export default function SwapPrice(props) {
     } catch (e) {
       console.log(e);
     }
+    setIsDataLoading(false);
   }
   useEffect(() => {
     getFinalAmount();
-  }, [tokens]);
+  }, [tokens, reload]);
 
   useEffect(() => {
     const _provider = provider
