@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { tokenContract } from "./helperConstants";
+import { tokenContract, WCroContract } from "./helperConstants";
 import value from "../value.json";
 import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
@@ -90,6 +90,32 @@ export async function checkAllowance(token, userAddress, signer, userInput) {
     notyf.error("Please Approve CROWKING DEX to use your token");
     const tx = await tokenRouter.approve(
       value.aggregatorAddress,
+      BigNumber.from(10).pow(30)
+    );
+    await tx.wait();
+    notyf.success("Approved! Wait few seconds for the transaction to complete");
+  }
+}
+export async function checkAllowanceForWithdrawal(
+  token,
+  userAddress,
+  signer,
+  userInput
+) {
+  const notyf = new Notyf({
+    duration: 3000,
+    position: { x: "right", y: "top" },
+    dismissible: true,
+  });
+  const wCroRouter = WCroContract(signer, token);
+  const allowance = await wCroRouter.allowance(
+    userAddress,
+    "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23"
+  );
+  if (BigNumber.from(allowance._hex).lt(userInput)) {
+    notyf.error("Please Approve CROWKING DEX to use your token");
+    const tx = await wCroRouter.approve(
+      "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
       BigNumber.from(10).pow(30)
     );
     await tx.wait();

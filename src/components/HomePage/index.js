@@ -20,8 +20,12 @@ import {
   tokenMap,
   tokenContract,
   aggregatorContract,
+  WCroContract,
 } from "../helperConstants";
-import { checkAllowance } from "../helperFunctions";
+import {
+  checkAllowance,
+  checkAllowanceForWithdrawal,
+} from "../helperFunctions";
 import highlightedpin from "../assests/images/highlightedPin.svg";
 import "./style.css";
 import { Lottie1, Lottie1Dark } from "../Lottie";
@@ -99,6 +103,66 @@ export default function HomePage(props) {
       finalGasPrice = feeData.maxPriorityFeePerGas;
     } else {
       finalGasPrice = feeData.lastBaseFeePerGas;
+    }
+    console.log(isCro, selectedToken2, selectedToken1, isOutputCro);
+    if (
+      (isCro && selectedToken2 === "WCRO") ||
+      (isOutputCro && selectedToken1 === "WCRO")
+    ) {
+      const temp = await getUserWallet();
+      const address = temp[0];
+      const signer = temp[1];
+      if (address === "" || signer === "") {
+        notyf.error("Please Reconnect Your Wallet and Try Again");
+        setIsDisabled(false);
+        return;
+      }
+      try {
+        const croRouter = WCroContract(signer, tokenMap[0][0]);
+        const deci = await croRouter.decimals();
+        const bigUserInput = ethers.utils.parseUnits(
+          userInput.toString(),
+          deci
+        );
+        if (isCro && selectedToken2 === "WCRO") {
+          const croBalance = await provider.getBalance(address);
+          if (croBalance.lt(bigUserInput)) {
+            notyf.error("Insufficient Balance");
+            setIsDisabled(false);
+            return;
+          }
+          const response = await croRouter.deposit({
+            value: bigUserInput,
+          });
+          await response.wait();
+        } else if (isOutputCro && selectedToken1 === "WCRO") {
+          await checkAllowanceForWithdrawal(
+            tokens.token1,
+            address,
+            signer,
+            bigUserInput
+          );
+          const wcroBalance = await croRouter.balanceOf(address);
+          if (wcroBalance.lt(bigUserInput)) {
+            notyf.error("Insufficient Balance");
+            setIsDisabled(false);
+            return;
+          }
+          const response = await croRouter.withdraw(bigUserInput);
+          await response.wait();
+        }
+        setIsDisabled(false);
+        notyf.success("Transaction Successful");
+        setReload((state) => {
+          return !state;
+        });
+        return;
+      } catch (e) {
+        notyf.error("Something Went Wrong");
+        console.log(e);
+        setIsDisabled(false);
+        return;
+      }
     }
     if (parameters.length === 4) {
       const temp = await getUserWallet();
@@ -539,6 +603,7 @@ export default function HomePage(props) {
                       <input
                         className="input"
                         type="text"
+                        readOnly={true}
                         value={outPutTokens}
                       />
                     )}
@@ -562,7 +627,10 @@ export default function HomePage(props) {
                       <div className="loader"></div>
                     ) : (
                       <p>
-                        1 {selectedToken1} = {convertToken.toFixed(4)}{" "}
+                        1 {selectedToken1} ={" "}
+                        {tokens.token1 !== tokens.token2
+                          ? convertToken.toFixed(4)
+                          : 1}{" "}
                         {selectedToken2}
                       </p>
                     )}
@@ -652,7 +720,10 @@ export default function HomePage(props) {
                       <div>1 {selectedToken1} price</div>
                       <div className="value-desc">
                         <span className="highlighted-token-amount">
-                          {convertToken.toFixed(5)} ({selectedToken2})
+                          {tokens.token1 !== tokens.token2
+                            ? convertToken.toFixed(5)
+                            : 1}{" "}
+                          ({selectedToken2})
                         </span>
                       </div>
                     </div>
@@ -660,9 +731,11 @@ export default function HomePage(props) {
                       <div>1 {selectedToken2} price</div>
                       <div className="value-desc">
                         <span className="highlighted-token-amount">
-                          {convertToken
-                            ? (1 / convertToken).toFixed(5)
-                            : "undefined"}{" "}
+                          {tokens.token1 !== tokens.token2
+                            ? convertToken
+                              ? (1 / convertToken).toFixed(5)
+                              : "undefined"
+                            : 1}{" "}
                           ({selectedToken1})
                         </span>
                       </div>

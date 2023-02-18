@@ -48,6 +48,10 @@ export default function SwapPrice(props) {
   const [balance, setBalance] = useState(0);
   const [routerFinalPath, setRouterFinalPath] = useState([]);
   useEffect(() => {
+    if (tokens.token1 === tokens.token2) {
+      setOutPutTokens(userInput);
+      return;
+    }
     setOutPutTokens(userInput * finalAmount);
   }, [userInput, tokens]);
   async function getAmountsOutFromDex(path, amountsIn, contract) {
@@ -119,7 +123,7 @@ export default function SwapPrice(props) {
   }
   useEffect(() => {
     getFinalAmount();
-  }, [tokens, reload]);
+  }, [tokens, reload, isCro]);
 
   useEffect(() => {
     const _provider = provider
@@ -177,7 +181,7 @@ export default function SwapPrice(props) {
     if (window.ethereum) {
       getBalance();
     }
-  }, [tokens.token1, reload]);
+  }, [tokens.token1, reload, isCro]);
 
   useEffect(() => {
     setParameters([balance, router, finalPath, pairs]);
