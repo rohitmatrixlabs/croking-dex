@@ -6,12 +6,20 @@ button:focus {
     outline: none;
 }
 
+*{
+    list-style: none;
+}
+
+
 .dex_connect{
     width: 35vh !important;
     text-align: center;
     height: 54px;
     font-size: 20px;
 }
+
+
+
 .content-wrapper
 {
     display: flex;
@@ -42,7 +50,7 @@ button:focus {
     justify-content: space-between;
     background: #17181D;
     border-radius: 25px;
-    width: 400px;
+    width: 500px;
     gap: 25px;
     min-height: 25em;
     padding: 2em 2em;
@@ -93,6 +101,8 @@ button:focus {
     border: none;
     width: 50%;
 }
+
+
 
 .token-input-row{
     display: flex;
@@ -329,12 +339,15 @@ button:focus {
     padding: 0 1em;
     gap: 2rem;
 }
+
+
 .btn-wrapper button{
     width: 35vh !important;
     text-align: center !important;
     height: 54px !important;
     font-size: 20px !important;
 }
+
 .select-token-header{
     display: flex;
     justify-content: space-between;
@@ -371,10 +384,9 @@ button:focus {
 
 .token-grid{
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, auto);
     grid-gap: 10px;
-    overflow-y: auto;
 }
 
 .fav-token{
@@ -382,19 +394,54 @@ button:focus {
     border-radius: 10px;
     display: flex;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
     overflow: hidden;
     align-items: center;
     gap: 10px;
     padding: 5px;
 }
+
+
+.list_token{
+    border: none;
+    justify-content: flex-start;
+}
+
+
 .fav-token:hover, .fav-token:focus{
-    background-color: #DFBB00;
+    background-color: rgb(2, 2, 2);
 }
 .fav-token img{
     height: 20px;
     width: 20px;
 }
+
+
+.list_tokens{
+    height: 300px;
+    overflow: auto;
+}
+.list_tokens::-webkit-scrollbar {
+    width: 8px;
+    background: #888;
+}
+
+
+.list_tokens::-webkit-scrollbar-thumb {
+    background: #DFBB00;
+  } 
+
+
+.list_tokens::-webkit-scrollbar-thumb:hover {
+    background: #DFBB00;
+  } 
+
+.list_name_symbol{
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+}
+
 
 .separator{
     border: 1px solid rgba(153, 153, 153, 0.25);
@@ -498,14 +545,11 @@ button:focus {
     }
     .token-grid{
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         grid-template-rows: repeat(2, auto);
         grid-gap: 10px;
         max-height: 280px;
         overflow-y: auto;
-    }
-    .fav-token{
-        width: 90%;
     }
 }
 
@@ -603,37 +647,5 @@ button:focus {
     }
     .setting-wrapper h1{
         font-size: 16px;
-    }
-}
-
-.showBalanceOfToken{
-    font-size: 10px;
-}
-.loader{
-    position: relative;
-    width: 100px;
-    height: 15px;
-    background-color: transparent;
-    
-}
-.translate-x-15{
-    transform: translateY(10px);
-}
-.loader::before{
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(90deg, #383838,#858585, #383838);
-    background-size: 400%;
-    animation: animate 10s linear infinite; 
-    background-size: 500%;
-}
-
-@keyframes animate{
-    0%{
-        background-position: 500% 0;
-    }
-    100%{
-        background-position: 0 0;
     }
 }
