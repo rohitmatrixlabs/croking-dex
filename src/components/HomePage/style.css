@@ -31,6 +31,7 @@ button:focus {
     padding: 1% 6%;
     flex-grow: 1;
     overflow-y: auto;
+    
 }
 .card1 {
     display: flex;
@@ -534,6 +535,45 @@ button:focus {
     background-color: rgba(153, 153, 153, 0.25);
 }
 
+.element {
+    /* opacity: 0; */
+    transition: all 1s ease-in-out;
+    height: 0;
+  }
+  
+  .entered {
+    /* opacity: 1; */
+    height: auto;
+  }
+  
+  .entering {
+    opacity: 1;
+    height: auto;
+  }
+  
+  .element-exit {
+    opacity: 1;
+    height: 0;
+  }
+  
+  .element-exit-active {
+    opacity: 0;
+    height: 0;
+  }
+
+.amountOptionWrapper{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.amountOption{
+    margin-top: 10px;
+    padding: 0.5em 1em;
+    background: #3B3B46;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
 
 @media only screen and (min-width: 1060px)  {
     .lionImage{
@@ -541,7 +581,14 @@ button:focus {
     }
     .content-wrapper{
         justify-content: space-between;
-        padding: 2% 10%;
+        --max-width: 1500px;
+        --container-padding: 1rem;
+        width: min(var(--max-width), 100% - (var(--container-padding) * 2));
+        margin-inline: auto;
+        display: flex;
+        justify-content: space-between;
+        padding: 2em 4em 0em 4em;
+        align-items: center;
     }
     .token-grid{
         display: grid;

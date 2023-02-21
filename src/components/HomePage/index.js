@@ -28,6 +28,7 @@ import {
   checkAllowanceForWithdrawal,
 } from "../helperFunctions";
 import highlightedpin from "../assests/images/highlightedPin.svg";
+import { CSSTransition, Transition } from 'react-transition-group';
 import "./style.css";
 import { Lottie1, Lottie1Dark } from "../Lottie";
 import { useSigner } from "wagmi";
@@ -90,7 +91,7 @@ export default function HomePage(props) {
     });
     setTimeout(() => setIsRotating(false), 500); // rotate for 5 milliseconds
   };
-
+  const nodeRef = useRef(null);
   const [isDisabled, setIsDisabled] = useState(false);
   async function onClickSwap() {
     setIsDisabled(true);
@@ -635,6 +636,12 @@ export default function HomePage(props) {
                       </div>
                     )}
                   </div>
+                  <div className="amountOptionWrapper">
+                    <div className="amountOption">25%</div>
+                    <div className="amountOption">50%</div>
+                    <div className="amountOption">75%</div>
+                    <div className="amountOption">100%</div>
+                  </div>
                 </div>
                 <div className="swapIconDiv">
                   <button className="no-style" onClick={onClickReverse}>
@@ -735,6 +742,16 @@ export default function HomePage(props) {
                     </div>
                   </div>
                 </div>
+                {/* <Transition
+                  in={expanded}
+                  timeout={1000}
+                  nodeRef={nodeRef}
+                >
+                  {(state) => (
+          <div
+            className={`element ${state}`}
+            ref={nodeRef}
+          > */}
                 <div
                   style={{
                     height: expanded ? "auto" : 0,
@@ -742,6 +759,7 @@ export default function HomePage(props) {
                     transition: "height 0.5s ease-out",
                   }}
                 >
+                   
                   <div className="modes">
                     <div
                       className="mode-option-notselected"
@@ -816,7 +834,9 @@ export default function HomePage(props) {
                                     </div>
                                     </div> */}
                   </div>
-                </div>
+              </div>
+            {/* )}
+                  </Transition> */}
               </div>
               <div className="btn-wrapper">
                 {!signer && (
