@@ -5,6 +5,13 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SwapPrice from "./components/SwapPrice";
 import "@rainbow-me/rainbowkit/styles.css";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  injectedWallet,
+  walletConnectWallet,
+  rainbowWallet,
+  metaMaskWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import {
   getDefaultWallets,
   RainbowKitProvider,
@@ -16,10 +23,21 @@ import { publicProvider } from "wagmi/providers/public";
 import { cronos } from "./components/helperConstants";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 const { chains, provider } = configureChains([cronos], [publicProvider()]);
-const { connectors } = getDefaultWallets({
-  appName: "My RainbowKit App",
-  chains,
-});
+// const { connectors } = getDefaultWallets({
+//   appName: "My RainbowKit App",
+//   chains,
+// });
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      injectedWallet({ chains }),
+      rainbowWallet({ chains }),
+      walletConnectWallet({ chains }),
+      metaMaskWallet({ chains }),
+    ],
+  },
+]);
 const wagmiClient = createClient({
   autoConnect: true,
   connectors,

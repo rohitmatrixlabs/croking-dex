@@ -21,6 +21,7 @@ import {
   tokenContract,
   aggregatorContract,
   WCroContract,
+  tokenMap2,
 } from "../helperConstants";
 import {
   checkAllowance,
@@ -59,8 +60,8 @@ export default function HomePage(props) {
   const [expanded, setExpanded] = useState(false);
   const { data: signer, isError, isLoading } = useSigner();
   const [selectToken, setSelectToken] = useState(false);
-  const [searchBarValue_list, setSearchBarValue_list] = useState(<div></div>)
-    const [searchBarValue_list2, setSearchBarValue_list2] = useState(<div></div>)
+  const [searchBarValue_list, setSearchBarValue_list] = useState(<div></div>);
+  const [searchBarValue_list2, setSearchBarValue_list2] = useState(<div></div>);
   const [selectToken1, setSelectToken1] = useState(false);
   const [selectToken2, setSelectToken2] = useState(false);
   const [searchValue1, setSearchValue1] = useState("");
@@ -380,7 +381,7 @@ export default function HomePage(props) {
               if (i === tokenMap.length - 1) {
                 setSelectedIcon1(
                   <img
-                    src={require(`../assests/images/webP/${tokenMap[6][2]}`)}
+                    src={require(`../assests/images/webP/question-mark.webp`)}
                   />
                 );
               }
@@ -397,7 +398,7 @@ export default function HomePage(props) {
           setSearchBarValue(<div>Address Not found</div>);
         }
       } else {
-        let temp = tokenMap
+        let temp = tokenMap2
           .filter((item) => {
             const searchTerm = searchValue1.toUpperCase();
             return item[1].includes(searchTerm);
@@ -423,24 +424,35 @@ export default function HomePage(props) {
           });
         setSearchBarValue(temp);
 
-
-
-        
-        let temp2 = tokenMap.filter((item) =>{
-          const searchTerm = searchValue1.toUpperCase();
-          return item[1].includes(searchTerm)
-      }).map((element, index) => {
-          return (<div className="fav-token list_token cursor-pointer" key={element[0] + element[1] + "1"} onClick={() => onClickToken(element, 1)}>
-          {element[2] !== "" ? <img src={require(`../assests/images/webP/${element[2]}`)} alt ="eth-icon" />: <img src={ethIcon} alt ="eth-icon" />}
-          <div className="list_name_symbol">
-          <div>{element[3]}</div>
-          <div>{element[1]}</div>
-          </div>
-          <div>
-          </div>
-      </div>)
-      })
-      setSearchBarValue_list(temp2)
+        let temp2 = tokenMap
+          .filter((item) => {
+            const searchTerm = searchValue1.toUpperCase();
+            return item[1].includes(searchTerm);
+          })
+          .map((element, index) => {
+            return (
+              <div
+                className="fav-token list_token cursor-pointer"
+                key={element[0] + element[1] + "1"}
+                onClick={() => onClickToken(element, 1)}
+              >
+                {element[2] !== "" ? (
+                  <img
+                    src={require(`../assests/images/webP/${element[2]}`)}
+                    alt="eth-icon"
+                  />
+                ) : (
+                  <img src={ethIcon} alt="eth-icon" />
+                )}
+                <div className="list_name_symbol">
+                  <div>{element[3]}</div>
+                  <div>{element[1]}</div>
+                </div>
+                <div></div>
+              </div>
+            );
+          });
+        setSearchBarValue_list(temp2);
       }
     }
     searchBar1();
@@ -449,7 +461,7 @@ export default function HomePage(props) {
   useEffect(() => {
     async function searchBar2() {
       if (searchValue2.startsWith("0x") || searchValue2.startsWith("0X")) {
-        if (searchValue2.length === tokenMap[0][1].length) {
+        if (searchValue2.length === tokenMap[0][0].length) {
           const tokenRouter = tokenContract(_provider, searchValue2);
           try {
             const name = await tokenRouter.symbol();
@@ -476,7 +488,7 @@ export default function HomePage(props) {
               if (i === tokenMap.length - 1) {
                 setSelectedIcon2(
                   <img
-                    src={require(`../assests/images/webP/${tokenMap[i][2]}`)}
+                    src={require(`../assests/images/webP/question-mark.webp`)}
                   />
                 );
               }
@@ -488,7 +500,7 @@ export default function HomePage(props) {
           setSearchBarValue2(selectToken2 && <div>Address Not found</div>);
         }
       } else {
-        let temp = tokenMap
+        let temp = tokenMap2
           .filter((item) => {
             const searchTerm = searchValue2.toUpperCase();
             return item[1].includes(searchTerm);
@@ -514,19 +526,34 @@ export default function HomePage(props) {
           });
         setSearchBarValue2(temp);
 
-        let temp2 = tokenMap.filter((item) =>{
-          const searchTerm = searchValue2.toUpperCase();
-          return item[1].includes(searchTerm)
-      }).map((element) => {
-          return (<div className="fav-token list_token cursor-pointer" key={element[0] + element[1] + "2"} onClick={() => onClickToken(element, 2)}>
-          {element[2] !== "" ? <img src={require(`../assests/images/webP/${element[2]}`)} alt ="eth-icon" />: <img src={ethIcon} alt ="eth-icon" />}
-          <div className="list_name_symbol">
-          <div>{element[3]}</div>
-          <div>{element[1]}</div>        
-          </div>
-          </div>)
-      })
-      setSearchBarValue_list2(temp2)
+        let temp2 = tokenMap
+          .filter((item) => {
+            const searchTerm = searchValue2.toUpperCase();
+            return item[1].includes(searchTerm);
+          })
+          .map((element) => {
+            return (
+              <div
+                className="fav-token list_token cursor-pointer"
+                key={element[0] + element[1] + "2"}
+                onClick={() => onClickToken(element, 2)}
+              >
+                {element[2] !== "" ? (
+                  <img
+                    src={require(`../assests/images/webP/${element[2]}`)}
+                    alt="eth-icon"
+                  />
+                ) : (
+                  <img src={ethIcon} alt="eth-icon" />
+                )}
+                <div className="list_name_symbol">
+                  <div>{element[3]}</div>
+                  <div>{element[1]}</div>
+                </div>
+              </div>
+            );
+          });
+        setSearchBarValue_list2(temp2);
       }
     }
     searchBar2();
@@ -590,10 +617,12 @@ export default function HomePage(props) {
                     <input
                       className="input"
                       type="text"
-                      value={userInput}
-                      onChange={(event) =>
-                        setUserInput(event.target.value.toString())
-                      }
+                      placeholder="0.0"
+                      value={userInput === "0" ? "" : userInput}
+                      onChange={(event) => {
+                        const temp = event.target.value.toString();
+                        setUserInput(temp === "" ? "0" : temp);
+                      }}
                     />
                   </div>
                   <div className="token-input-row">
@@ -860,16 +889,15 @@ export default function HomePage(props) {
                 </div>
               )}
               {selectToken1 && (
-               <>
-               <div className="token-grid">{searchBarValue}</div>
-                <hr></hr>
-                    <div className="list"> 
+                <>
+                  <div className="token-grid">{searchBarValue}</div>
+                  <hr></hr>
+                  <div className="list">
                     <li className="list_tokens">{searchBarValue_list}</li>
-                    </div>
-                    </>
+                  </div>
+                </>
               )}
               {selectToken2 && (
-            
                 <div className="searchBar">
                   <img
                     src={searchIcon}
@@ -886,15 +914,14 @@ export default function HomePage(props) {
                     }}
                   />
                 </div>
-               
               )}
               {selectToken2 && (
                 <>
-                <div className="token-grid">{searchBarValue2}</div>
-                <hr></hr>
-                <div className="list"> 
-                <li className="list_tokens">{searchBarValue_list2}</li>
-                </div>
+                  <div className="token-grid">{searchBarValue2}</div>
+                  <hr></hr>
+                  <div className="list">
+                    <li className="list_tokens">{searchBarValue_list2}</li>
+                  </div>
                 </>
               )}
               {/* {selectToken2 && tokenMap.map(element => {
