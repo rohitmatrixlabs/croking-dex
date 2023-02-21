@@ -635,10 +635,10 @@ export default function HomePage(props) {
                     )}
                   </div>
                   <div className="amountOptionWrapper">
-                    <div className="amountOption">25%</div>
-                    <div className="amountOption">50%</div>
-                    <div className="amountOption">75%</div>
-                    <div className="amountOption">100%</div>
+                    <div onClick={()=>setUserInput(tokenBalance/4)} className="amountOption">25%</div>
+                    <div onClick={()=>setUserInput(tokenBalance/2)} className="amountOption">50%</div>
+                    <div onClick={()=>setUserInput(tokenBalance*3/4)} className="amountOption">75%</div>
+                    <div onClick={()=>setUserInput(tokenBalance/1)} className="amountOption">100%</div>
                   </div>
                 </div>
                 <div className="swapIconDiv">
