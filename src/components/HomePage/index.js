@@ -90,7 +90,6 @@ export default function HomePage(props) {
     });
     setTimeout(() => setIsRotating(false), 500); // rotate for 5 milliseconds
   };
-
   const [isDisabled, setIsDisabled] = useState(false);
   async function onClickSwap() {
     setIsDisabled(true);
@@ -635,6 +634,12 @@ export default function HomePage(props) {
                       </div>
                     )}
                   </div>
+                  <div className="amountOptionWrapper">
+                    <div onClick={()=>setUserInput(tokenBalance/4)} className="amountOption">25%</div>
+                    <div onClick={()=>setUserInput(tokenBalance/2)} className="amountOption">50%</div>
+                    <div onClick={()=>setUserInput(tokenBalance*3/4)} className="amountOption">75%</div>
+                    <div onClick={()=>setUserInput(tokenBalance/1)} className="amountOption">100%</div>
+                  </div>
                 </div>
                 <div className="swapIconDiv">
                   <button className="no-style" onClick={onClickReverse}>
@@ -742,6 +747,7 @@ export default function HomePage(props) {
                     transition: "height 0.5s ease-out",
                   }}
                 >
+                   
                   <div className="modes">
                     <div
                       className="mode-option-notselected"
@@ -816,7 +822,7 @@ export default function HomePage(props) {
                                     </div>
                                     </div> */}
                   </div>
-                </div>
+              </div>
               </div>
               <div className="btn-wrapper">
                 {!signer && (
