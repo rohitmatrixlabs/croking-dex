@@ -83,7 +83,7 @@ export const cronos = {
 export const tokenMap = [
   ["0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23", "CRO", "cronos.webp"],
   ["0x7C8b5501A40D382e8A11889834c80b2D7Fa1Fc4F", "CROKING", "croking.webp"],
-  ["0xeC0d0f2D7dDF5e6F1Ed18711fE5DD5C790E1C4d6", "GRDT", "question-mark.webp"],
+  ["0xeC0d0f2D7dDF5e6F1Ed18711fE5DD5C790E1C4d6", "GDRT", "gdrt.webp"],
   ["0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03", "VVS", "vvs.webp"],
   ["0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23", "WCRO", "cronos.webp"],
   ["0xc21223249CA28397B4B6541dfFaEcC539BfF0c59", "USDC", "usdc.webp"],
